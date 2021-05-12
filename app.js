@@ -36,11 +36,12 @@ class Products {
 // display products
 class UI {
   displayProducts(products){
-    let result = '';
+    let result = "";
     products.forEach(product=> {
-    result += `<article class="product">
-    <div class="img-container">
-      <img src=${product.image}
+    result += `
+    <article class="product">
+     <div class="img-container">
+      <img src=${product.image} alt="product" class="product-img" />
         <button class="bag-btn" data-id=${product.id}>
           <i class="fas fa-shopping-cart"></i>
      add to bag
@@ -50,6 +51,7 @@ class UI {
    <h4>KES${product.price}</h4>
   </article>`;
   })
+  productsDom.innerHTML = result;
  }
 }
  // local storage
