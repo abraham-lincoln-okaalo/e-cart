@@ -115,6 +115,9 @@ class UI {
    cartOverlay.classList.add('transparentBcg');
    cartDom.classList.add('showCart');
   }
+  setupAPP(){
+
+  }
 }
 // local storage
 class Storage {
@@ -128,11 +131,17 @@ class Storage {
   static saveCart(cart){
    localStorage.setItem('cart', JSON.stringify(cart))
   }
+  static getCart(){
+   return localStorage.getItem('cart')?JSON.parse(localStorage.getItem('cart')):[] ;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const ui = new UI();
   const products = new Products();
+
+  // setup APP
+  ui.setupAPP();
 
   // get all products
   products
