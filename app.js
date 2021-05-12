@@ -53,6 +53,9 @@ class UI {
   })
   productsDom.innerHTML = result;
  }
+ getBagButtons(){
+  const buttons = [...document.querySelectorAll(".bag-btn")];
+ }
 }
  // local storage
 class Storage{
@@ -68,7 +71,8 @@ document.addEventListener("DOMContentLoaded", ()=> {
  // get all products
  products.getProducts().then(products => {
   ui.displayProducts(products);
-
   Storage.saveProducts(products);
+ }).then(()=>{
+  ui.getBagButtons();
  });
 })
