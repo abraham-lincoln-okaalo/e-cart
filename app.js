@@ -48,7 +48,7 @@ class UI {
           <i class="fas fa-shopping-cart"></i>
      add to bag
         </button>
-   </div> 
+   </div>
    <h3>${product.title}</h3>
    <h4>KES${product.price}</h4>
   </article>`;
@@ -70,9 +70,10 @@ class UI {
         event.target.innerText = "In Cart";
         event.target.disabled = true;
         // get product from products
-        let cartItem = Storage.getProducts(id);
-        console.log(cartItem);
+        let cartItem = { ...Storage.getProducts(id),amount: 1 };
         // add to cart
+        cart = [...cart,cartItem];
+        console.log(cart)
         // save cart to local storage
         // set cart values
         // display cart item
