@@ -46,7 +46,7 @@ class UI {
       <img src=${product.image} alt="product" class="product-img" />
         <button class="bag-btn" data-id=${product.id}>
           <i class="fas fa-shopping-cart"></i>
-     add to bag
+     add to cart
         </button>
    </div>
    <h3>${product.title}</h3>
@@ -70,35 +70,34 @@ class UI {
         event.target.innerText = "In Cart";
         event.target.disabled = true;
         // get product from products
-        let cartItem = { ...Storage.getProducts(id),amount: 1 };
+        let cartItem = { ...Storage.getProducts(id), amount: 1 };
         // add to cart
-        cart = [...cart,cartItem];
+        cart = [...cart, cartItem];
         // save cart to local storage
         Storage.saveCart(cart);
         // set cart values
         this.setCartValues(cart);
         // display cart item
-        this.addCartItem(cartItem)
+        this.addCartItem(cartItem);
         // show the cart
         this.showCart();
       });
     });
   }
-  setCartValues(cart){
-   let tempTotal = 0;
-   let itemsTotal = 0;
-   cart.map(item =>{
-    tempTotal += item.price * item.amount;
-    itemsTotal += item.amount
-   })
-   cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
-   cartItems.innerText = itemsTotal;
+  setCartValues(cart) {
+    let tempTotal = 0;
+    let itemsTotal = 0;
+    cart.map((item) => {
+      tempTotal += item.price * item.amount;
+      itemsTotal += item.amount;
+    });
+    cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
+    cartItems.innerText = itemsTotal;
   }
-  addCartItem(item){
-   const div = document.createElement('div');
-   div.classList.add('cart-item');
-   div.innerHTML = `
-   <img src="${item.image}" alt="product">
+  addCartItem(item) {
+    const div = document.createElement("div");
+    div.classList.add("cart-item");
+    div.innerHTML = `<img src=${item.image} alt="product" />
    <div>
     <h4>${item.title}</h4>
     <h5>KES${item.price}</h5>
@@ -109,25 +108,53 @@ class UI {
     <p class="item-amount">${item.amount}</p>
     <i class="fas fa-chevron-down" data-id=${item.id}></i>
    </div>`;
-  cartContent.appendChild(div);
+    cartContent.appendChild(div);
   }
-  showCart(){
-   cartOverlay.classList.add('transparentBcg');
-   cartDom.classList.add('showCart');
+  showCart() {
+    cartOverlay.classList.add("transparentBcg");
+    cartDom.classList.add("showCart");
   }
-  setupAPP(){
-   cart = Storage.getCart();
+  setupAPP() {
+    cart = Storage.getCart();
+    this.setCartValues(cart);
+    this.populateCart(cart);
+    cartBtn.addEventListener("click", this.showCart);
+    closeCartBtn.addEventListener("click", this.hideCart);
+  }
+  populateCart(cart) {
+    cart.forEach((item) => this.addCartItem(item));
+  }
+  hideCart() {
+    cartOverlay.classList.remove("transparentBcg");
+    cartDom.classList.remove("showCart");
+  }
+  cartLogic() {
+   // clear cart button
+    clearCartBtn.addEventListener("click", () => {
+     this.clearCart();
+    });
+    // cart functionality
+  }
+  clearCart() {
+    let cartItems = cart.map(item => item.id);
+    cartItems.forEach(id => this.removeItem(id));
+
+    console.log(cartContent.children)
+    while(cartContent.children.length>0){
+     cartContent.removeChild(cartContent.children[0]);
+    }
+    this.hideCart();
+  }
+  removeItem(id){
+   cart = cart.filter(item => item.id !== id);
    this.setCartValues(cart);
-   this.populateCart(cart);
-   cartBtn.addEventListener('click', this.showCart);
-   closeCartBtn.addEventListener('click', this.hideCart)
+   Storage.saveCart(cart);
+   let button = this.getSingleButton(id);
+   button.disabled = false;
+   button.innerHTML = `<i class = "fas fa-shopping-cart"></i>add to cart`;
   }
-  populateCart(cart){
-   cart.forEach(item => this.addCartItem(item))
-  }
-  hideCart(){
-   cartOverlay.classList.remove("transparentBcg");
-   cartDom.classList.remove("transparentBcg");
+  getSingleButton(id){
+   return buttonsDOM.find(button => button.dataset.id === id)
   }
 }
 // local storage
@@ -139,11 +166,13 @@ class Storage {
     let products = JSON.parse(localStorage.getItem("products"));
     return products.find((product) => product.id === id);
   }
-  static saveCart(cart){
-   localStorage.setItem('cart', JSON.stringify(cart))
+  static saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
-  static getCart(){
-   return localStorage.getItem('cart')?JSON.parse(localStorage.getItem('cart')):[] ;
+  static getCart() {
+    return localStorage.getItem("cart")
+      ? JSON.parse(localStorage.getItem("cart"))
+      : [];
   }
 }
 
@@ -163,5 +192,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(() => {
       ui.getBagButtons();
+      ui.cartLogic();
     });
 });
